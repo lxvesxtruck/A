@@ -1,0 +1,68 @@
+local animationReplacements = {
+    ["10469493270"] = "13532600125",
+    ["10469630950"] = "13296577783",
+    ["15955393872"] = "15943915877",
+    ["10470104242"] = "14351441234",
+    ["10479335397"] = "12509505723",
+    ["10469639222"] = "16139108718",
+    ["10470389827"] = "0",
+    ["10471336737"] = "12296882427",
+    ["12510170988"] = "12618271998",
+    ["12447707844"] = "17086594393",
+    ["10466974800"] = "18181589384",
+    ["12983333733"] = "13801090462",
+    ["13927612951"] = "18450480375"
+}
+
+local musicId = "rbxassetid://2201067635"
+
+local function showNotification()
+    local StarterGui = game:GetService("StarterGui")
+    StarterGui:SetCore("SendNotification", {
+        Title = "Replacements Tsb Animations Script",
+        Text = "Made by mellonioisback :D",
+        Duration = 5
+    })
+end
+
+local function replaceAnimation(character)
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    
+    if humanoid then
+        humanoid.AnimationPlayed:Connect(function(animationTrack)
+            local currentAnimationId = animationTrack.Animation.AnimationId:gsub("rbxassetid://", "")
+            
+            if animationReplacements[currentAnimationId] then
+                animationTrack:Stop()
+                
+                if animationReplacements[currentAnimationId] ~= "0" then
+                    local newAnimation = Instance.new("Animation")
+                    newAnimation.AnimationId = "rbxassetid://" .. animationReplacements[currentAnimationId]
+                    local newTrack = humanoid:LoadAnimation(newAnimation)
+                    
+                    newTrack:Play()
+                    
+                    local sound = character:FindFirstChild("AnimationBackgroundSound")
+                    if not sound then
+                        sound = Instance.new("Sound")
+                        sound.Name = "AnimationBackgroundSound"
+                        sound.SoundId = musicId
+                        sound.Looped = true
+                        sound.Parent = character:FindFirstChild("HumanoidRootPart") or character
+                        sound:Play()
+                    end
+                end
+            end
+        end)
+    end
+end
+
+local player = game.Players.LocalPlayer
+
+player.CharacterAdded:Connect(replaceAnimation)
+
+if player.Character then
+    replaceAnimation(player.Character)
+end
+
+showNotification()
